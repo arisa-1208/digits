@@ -45,6 +45,21 @@ async function main() {
       },
     });
   });
+  config.defaultContacts.forEach(async (contact, index) => {
+    console.log(`  Adding contact: ${contact.firstName} (${contact.lastName})`);
+    await prisma.contact.upsert({
+      where: { id: index },
+      update: {},
+      create: {
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        address: contact.address,
+        image: contact.image,
+        description: contact.description,
+        owner: contact.owner,
+      },
+    });
+  });
 }
 main()
   .then(() => prisma.$disconnect())
