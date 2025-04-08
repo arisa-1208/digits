@@ -3,7 +3,7 @@ title: Digits
 description: A contact management system with notes and admin roles.
 ---
 
-<img src="doc/landing.png" width="600">
+<img src="doc/landing.png">
 
 ## Installation
 
