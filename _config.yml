@@ -1,8 +1,10 @@
-title: nextjs-application-template
-description: A template for quickly starting Next.js application development
+title: Digits
+description: A contact management system with notes and admin roles.
 google_analytics:
-show_downloads: true
-theme: jekyll-theme-cayman
-
+show_downloads: false
+theme: jekyll-theme-minimal
+github:
+  is_project_page: true
+  repository_url: https://github.com/syncdstudy/syncdstudy.github.io
 gems:
   - jekyll-mentions
