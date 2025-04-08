@@ -1,24 +1,4 @@
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/landing-page.png)
-
-nextjs-application-template is a sample Next.js 14 application that illustrates:
-
-- A standard directory layout using 'src/' as recommended in the [Next.js Project Structure](https://nextjs.org/docs/getting-started/project-structure) guide.
-- [Bootstrap 5 React](https://react-bootstrap.github.io/) for user interface.
-- [React Hook Form](https://www.react-hook-form.com/) for form development.
-- Authorization, authentication, and registration using [NextAuth.js](https://next-auth.js.org/).
-- Initialization of users and data from a settings file.
-- Alerts regarding success or failure of DB updates using [Sweet Alert](https://sweetalert.js.org/).
-- Quality assurance using [ESLint](http://eslint.org) with packages to partially enforce the [Next.js ESLint rules](https://nextjs.org/docs/app/building-your-application/configuring/eslint) and the [AirBnB Javascript Style Guide](https://github.com/airbnb/javascript).
-
-The goal of this template is to help you get quickly started doing Next.js development by providing a reasonable directory structure for development and deployment, a set of common extensions to the core framework, and boilerplate code to implement basic page display, navigation, forms, roles, and database manipulation.
-
-To keep this codebase simple and small, some important capabilities are intentionally excluded from this template:
-
-- Unit Testing
-- Security
-- Deployment
-
-Examples of the these capabilities will be provided elsewhere.
+<img src="doc/landing.png" width="600">
 
 ## Installation
 
@@ -26,7 +6,7 @@ First, [install PostgreSQL](https://www.postgresql.org/download/). Then create a
 
 ```
 
-$ createdb nextjs-application-template
+$ createdb digits
 Password:
 $
 
@@ -132,182 +112,120 @@ $
 
 The following sections describe the major features of this template.
 
-### Directory structure
+### 🗂️ Directory Structure
 
-The top-level directory structure is:
-
-```
-
-.github # holds the GitHub Continuous Integration action and Issue template.
-
-config/ # holds configuration files, such as settings.development.json
-
-doc/ # holds developer documentation, user guides, etc.
-
-prisma/ # holds the Prisma ORM schema and seed.ts files.
-
-public/ # holds the public images.
-
-src/ # holds the application files.
-
-tests/ # holds the Playwright acceptance tests.
-
-.eslintrc.json # The ESLint configuration.
-
-.gitignore # don't commit VSCode settings files, node_modules, and settings.production.json
+Here is a breakdown of the key folders and files:
 
 ```
+.github/                  # GitHub CI workflows, issue templates
+config/                   # Configuration files like settings.development.json
+doc/                      # Screenshots and documentation
+prisma/                   # Prisma ORM schema and seed script
+public/                   # Public static assets (like images)
+src/                      # Main app code
+tests/                    # Playwright tests
 
-This structure separates documentation files (such as screenshots) and configuration files (such as the settings files) from the actual Next.js application.
-
-The src/ directory has this structure:
-
+.eslintrc.json            # ESLint configuration
+.gitignore                # Files to ignore in git
+.env                      # Environment variables
 ```
 
-app/
+Inside `src/`:
 
-  add/ # The add route
-    page.tsx # The Add Stuff Page
-
-  admin/
-    page.tsx # The Admin Page
-
-  api/auth/[...nextauth]/
-    route.ts # The NextAuth configuration
-
-  auth/
-    change-password/
-      page.tsx # The Change Password Page
-
-    signin/
-      page.tsx # The Sign In Page
-
-    signout/
-      page.tsx # The Sign Out Page
-
-    signup/
-      page.tsx # The Sign Up / Register Page
-
-  edit/
-    page.tsx # The Edit Stuff Page
-
-  list/
-    page.tsx # The List Stuff Page
-
-  not-authorized/
-    page.tsx # The Not Authorized Page
-
-  layout.tsx # The layout of the application
-
-  page.tsx # The Landing Page
-
-  providers.tsx # Session providers.
+```
+src/
+  app/
+    add/                  # Add Contact page
+    admin/                # Admin-only view of all contacts
+    edit/                 # Edit Contact page
+    list/                 # List user’s contacts
+    not-authorized/       # Shown if access is denied
+    auth/
+      signin/             # Sign In page
+      signup/             # Sign Up / Register page
+      signout/            # Sign Out page
+      change-password/    # Change Password page
+    layout.tsx            # Page layout
+    page.tsx              # Landing page
+    providers.tsx         # Session providers
 
   components/
-    AddStuffForm.tsx # The React Hook Form for adding stuff.
-
-    EditStuffForm.tsx # The Edit Stuff Form.
-
-    Footer.tsx # The application footer.
-
-    LoadingSpinner.tsx # Indicates working.
-
-    Navbar.tsx # The application navbar.
-
-    StuffItem.tsx # Row in the list stuff page.
-
-    StuffItemAdmin.tsx # Row in the admin list stuff page.
+    AddContactForm.tsx    # Form to add a contact
+    AddNoteForm.tsx       # Adds a timestamped note to a contact.
+    EditContactForm.tsx   # Form to edit a contact
+    ContactCard.tsx       # Displays a single contact (regular user)
+    ContactCardAdmin.tsx  # Displays a contact (admin view)
+    Navbar.tsx            # Navigation bar
+    Footer.tsx            # Footer layout
+    LoadingSpinner.tsx    # Shown while loading
+    NoteItem.tsx          # This component displays a single note with its creation date and content using a Bootstrap ListGroup.Item
 
   lib/
-
-    dbActions.ts # Functions to manipulate the Postgres database.
-
-    page-protections.ts # Functions to check for logged in users and their roles.
-
-    prisma.ts # Singleton Prisma client.
-
-    validationSchemas.ts # Yup schemas for validating forms.
-
-  tests/ # playwright acceptance tests.
-
+    dbActions.ts          # Server-side DB actions (e.g. create, update, delete)
+    prisma.ts             # Prisma client instance
+    page-protection.ts    # Page protection functions
+    validationSchemas.ts  # Yup schemas for validating form inputs
 ```
+
+---
 
 ### Application functionality
 
-The application implements a simple CRUD application for managing "Stuff", which is a PostgreSQL table consisting of a name (String), a quantity (Number), a condition (one of 'excellent', 'good', 'fair', or 'poor') and an owner.
+The application implements a simple CRUD system for managing **Contacts**, each of which includes a first name, last name, address, image URL, description, and an owner (the user who created it). Users can also add short **notes** to any of their contacts.
 
-By default, each user only sees the Stuff that they have created. However, the settings file enables you to define default accounts. If you define a user with the role "admin", then that user gets access to a special page which lists all the Stuff defined by all users.
+By default, each user only sees the contacts that they have created. However, the settings file allows you to define default accounts. If you define a user with the role `"admin"`, then that user has access to a special admin page which displays all contacts created by all users.
 
 #### Landing page
-
 When you retrieve the app at http://localhost:3000, this is what should be displayed:
 
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/landing-page.png)
+![](doc/landing.png)
 
-The next step is to use the Login menu to either Login to an existing account or register a new account.
+#### Login / Register
+Allows users to log in to an existing account or create a new one.
 
-#### Login page
+![](doc/signin-page.png)
 
-Clicking on the Login link, then on the Sign In menu item displays this page:
+#### List Contacts
+Shows the user a grid of their added contacts (name, address, image, and description).
 
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/signin-page.png)
+![](doc/list-contact-page.png)
 
-#### Register page
+#### Add Contact
+Users can fill out a form to add a new contact to their list.
 
-Alternatively, clicking on the Login link, then on the Sign Up menu item displays this page:
+![](doc/add-contact-page.png)
 
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/register-page.png)
+#### Edit Contact
+Users can click “Edit” on a contact card to update their information.
 
-#### Landing (after Login) page, non-Admin user
+![](doc/edit-contact-page.png)
 
-Once you log in (either to an existing account or by creating a new one), the navbar changes as follows:
+#### Notes
+Users can attach short notes to any contact. Notes are displayed with timestamps.
 
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/landing-after-login-page.png)
+![](doc/added-notes.png)
 
-You can now add new Stuff documents, and list the Stuff you have created. Note you cannot see any Stuff created by other users.
+#### Admin Page
+Admins can view **all contacts** across all users. This page is only accessible to users with the `ADMIN` role.
 
-#### Add Stuff page
+![](doc/admin-page.png)
 
-After logging in, here is the page that allows you to add new Stuff:
+### 🧾 Tables
 
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/add-stuff-page.png)
+The app uses three main tables:
 
-#### List Stuff page
+- **User**
+  - `id`, `email`, `password` (hashed), `role` (USER or ADMIN)
 
-After logging in, here is the page that allows you to list all the Stuff you have created:
+- **Contact**
+  - `id`, `firstName`, `lastName`, `address`, `image`, `description`, `owner` (user email)
 
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/list-stuff-page.png)
+- **Note**
+  - `id`, `note`, `contactId`, `owner`, `createdAt`
 
-You click the "Edit" link to go to the Edit Stuff page, shown next.
+These are defined in `prisma/schema.prisma` and populated in `prisma/seed.ts`.
 
-#### Edit Stuff page
-
-After clicking on the "Edit" link associated with an item, this page displays that allows you to change and save it:
-
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/edit-stuff-page.png)
-
-#### Landing (after Login), Admin user
-
-You can define an "admin" user in the settings.json file. This user, after logging in, gets a special entry in the navbar:
-
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/admin-landing-page.png)
-
-#### Admin page (list all users stuff)
-
-To provide a simple example of a "super power" for Admin users, the Admin page lists all of the Stuff by all of the users:
-
-![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/admin-list-stuff-page.png)
-
-Note that non-admin users cannot get to this page, even if they type in the URL by hand.
-
-### Tables
-
-The application implements two tables "Stuff" and "User". Each Stuff row has the following columns: id, name, quantity, condition, and owner. The User table has the following columns: id, email, password (hashed using bcrypt), role.
-
-The Stuff and User models are defined in [prisma/schema.prisma](https://github.com/ics-software-engineering/nextjs-application-template/blob/main/prisma/schema.prisma).
-
-The tables are initialized in [prisma/seed.ts](https://github.com/ics-software-engineering/nextjs-application-template/blob/main/prisma/seed.ts) using the command `npx prisma db seed`.
-
+---
 ### CSS
 
 The application uses the [React implementation of Bootstrap 5](https://react-bootstrap.github.io/). You can adjust the theme by editing the `src/app/globals.css` file. To change the theme override the Bootstrap 5 CSS variables.
@@ -345,7 +263,7 @@ The application allows users to register and create new accounts at any time.
 
 ### Authorization
 
-Only logged in users can manipulate Stuff items (but any registered user can manipulate any Stuff item, even if they weren't the user that created it.)
+Only logged in users can manage Contacts (but any registered user can manipulate any Stuff item, even if they weren't the user that created it.)
 
 ### Configuration
 

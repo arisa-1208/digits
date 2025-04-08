@@ -13,7 +13,9 @@ const AdminPage = async () => {
       user: { email: string; id: string; randomKey: string };
     } | null,
   );
+
   const contacts: Contact[] = await prisma.contact.findMany({});
+
   return (
     <main>
       <Container id="list" fluid className="py-3">
@@ -22,8 +24,8 @@ const AdminPage = async () => {
             <h1 className="text-center">List Contacts Admin</h1>
             <Row xs={1} md={2} lg={3} className="g-4">
               {contacts.map((contact) => (
-                <Col key={contact.firstName + contact.lastName}>
-                  <ContactCardAdmin contact={contact} />
+                <Col key={contact.id}>
+                  <ContactCardAdmin contact={contact} notes={[]} />
                 </Col>
               ))}
             </Row>
